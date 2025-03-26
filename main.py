@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 import sqlite3
 import matplotlib.pyplot as plt
+from datetime import datetime
+import time
+import pytz
 import io
 
 # Bot configuration
@@ -56,14 +59,68 @@ async def commands_list(ctx):
     # Send any remaining part of the help text
     await ctx.send(help_text)
 
-@bot.command()
-async def hello(ctx):
-    await ctx.send("hello")
+import random
 
+greetings = [
+    "hey there, {}!", 
+    "hello, {}!", 
+    "hi, {} how's it going", 
+    "yo, {}", 
+    "sup, {}?", 
+    "greetings, {}", 
+    "hola, {}", 
+    "hey hey, {}"
+]
 
-@bot.command()
-async def hi(ctx):
-    await ctx.send("hi")
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return  # Evita que el bot se responda a sí mismo
+        
+    cst = pytz.timezone('US/Central')
+    current_time = datetime.now(cst)
+
+    if 6 <= current_time.hour < 12:
+        if "hi reece" in message.content.lower():
+            response = "good morning, {}".format(message.author.mention)
+            await message.channel.send(response)
+
+        if "hello reece" in message.content.lower():
+            response = "good morning, {}".format(message.author.mention)
+            await message.channel.send(response)
+        
+        if "gm reece" in message.content.lower():
+            response = "good morning, {}".format(message.author.mention)
+            await message.channel.send(response)
+            
+        if "good morning reece" in message.content.lower():
+            response = "good morning, {}".format(message.author.mention)
+            await message.channel.send(response)
+        return
+
+    if "hi reece" in message.content.lower():
+        response = random.choice(greetings).format(message.author.mention)
+        await message.channel.send(response)
+
+    
+    if "do a backflip reece" in message.content.lower():
+        response = random.choice(greetings).format(message.author.mention)
+        await message.channel.send("🤸")
+        time.sleep(0.5)
+        await message.channel.send("Ta-da!")
+
+    if "reece do a backflip" in message.content.lower():
+        response = random.choice(greetings).format(message.author.mention)
+        await message.channel.send("🤸")
+        time.sleep(0.5)
+        await message.channel.send("Ta-da!")
+
+    if "hello reece" in message.content.lower():
+        response = random.choice(greetings).format(message.author.mention)
+        await message.channel.send(response)
+
+    await bot.process_commands(message)  # Permite que los comandos sigan funcionando
+
 
 
 @bot.command()
