@@ -96,11 +96,13 @@ async def on_message(message):
         if "good morning reece" in message.content.lower():
             response = "good morning, {}".format(message.author.mention)
             await message.channel.send(response)
-        return
-
-    if "hi reece" in message.content.lower():
-        response = random.choice(greetings).format(message.author.mention)
-        await message.channel.send(response)
+    else:
+        if "hi reece" in message.content.lower():
+            response = random.choice(greetings).format(message.author.mention)
+            await message.channel.send(response)
+        if "hello reece" in message.content.lower():
+            response = random.choice(greetings).format(message.author.mention)
+            await message.channel.send(response)
 
     
     if "do a backflip reece" in message.content.lower():
@@ -115,9 +117,7 @@ async def on_message(message):
         time.sleep(0.5)
         await message.channel.send("Ta-da!")
 
-    if "hello reece" in message.content.lower():
-        response = random.choice(greetings).format(message.author.mention)
-        await message.channel.send(response)
+
 
     await bot.process_commands(message)  # Permite que los comandos sigan funcionando
 
