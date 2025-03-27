@@ -11,7 +11,7 @@ import io
 TOKEN = "MTM1NDUzMjYzMzU0NzExNjc4Nw.GOwVUO.7DP5CAsfNwwJrjHKN8VT05q3Dmzp9kQNlL3r6Y"
 PREFIX = "!"
 
-bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
 
 # Connect to SQLite database
 conn = sqlite3.connect("points.db")
@@ -38,8 +38,8 @@ conn.commit()
 async def on_ready():
     print(f"Bot connected as {bot.user}")
 
-@bot.command(name="commands")
-async def commands_list(ctx):
+@bot.command()
+async def help(ctx):
     """Displays a list of available commands"""
     help_text = (
         "**Available Commands:**\n"
