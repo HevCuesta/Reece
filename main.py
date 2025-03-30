@@ -92,7 +92,7 @@ async def on_ready():
 async def magic_8ball(ctx, *, question=None):
     """Ask the Magic 8-Ball a question!"""
     if not question:
-        await ctx.send(f"{ctx.author.mention}, you need to ask a question! Try `!8ball Will I have good luck today?`")
+        await ctx.send(f"{ctx.author.mention}, you need to ask a question")
         return
         
     # Small chance of getting a custom response
@@ -103,7 +103,6 @@ async def magic_8ball(ctx, *, question=None):
     
     # Create an embed for the response
     embed = discord.Embed(
-        title="🔮 Magic 8-Ball",
         description=f"**Question:** {question}",
         color=response["color"]
     )
@@ -116,11 +115,11 @@ async def magic_8ball(ctx, *, question=None):
     
     # Add a small flavor text based on response type
     if response["type"] == "positive":
-        embed.set_footer(text="Looks like the universe is on your side!")
+        embed.set_footer(text="!!!!!!!")
     elif response["type"] == "negative":
-        embed.set_footer(text="Don't shoot the messenger...")
+        embed.set_footer(text="idk man dont blame me...")
     else:
-        embed.set_footer(text="The future is cloudy...")
+        embed.set_footer(text="youch...")
     
     await ctx.send(embed=embed)
 
