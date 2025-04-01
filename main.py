@@ -12,6 +12,10 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import requests
 import asyncio
+from tower import Tower
+from tower_viz import TowerVisualization
+
+
 
 
 # List of Magic 8-Ball responses
@@ -65,6 +69,8 @@ PREFIX = "!"
 
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
 
+
+
 # Connect to SQLite database
 conn = sqlite3.connect("points.db")
 c = conn.cursor()
@@ -87,6 +93,9 @@ conn.commit()
 @bot.event
 async def on_ready():
     print(f"Bot connected as {bot.user}")
+    await bot.add_cog(Tower(bot))
+    await bot.add_cog(TowerVisualization(bot))
+    print('Tower cogs loaded')
 
 @bot.command(name="8ball", aliases=["magic8", "8b", "magic8ball"])
 async def magic_8ball(ctx, *, question=None):
@@ -142,8 +151,13 @@ async def help(ctx):
         "!removepoints @user <amount> - Removes points from a user\n"
         "!giveitem @user <quantity> <item> - Gives an item to a user\n"
         "!ranking - Displays the top 10 users with the most points and a chart\n"
-        "!8ball <question> - Ask a question, and the ball shall answer"
-    )
+        "!8ball <question> - Ask a question, and the ball shall answer\n"
+        "!tower - See what floors the tower has\n"
+        "!toweradd <Floor Name> | <Floor Description> - Add a floor to the tower\n"
+        "!towerinfo <Floor number> - Get details about a floor\n"
+        "!towerstats - Get tower statistics\n"
+        "!seetower - GET A GLIMPSE AT THE TOWER OF HORROR"
+       )
     
     # Split help message into chunks if it exceeds Discord's message length limit
     MAX_LENGTH = 2000
@@ -419,5 +433,7 @@ async def ranking(ctx):
 
 
 
-
-bot.run(TOKEN)
+if __name__ == "__main__":
+    
+    bot.run(TOKEN)
+    
