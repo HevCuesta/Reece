@@ -139,3 +139,44 @@ discord.ext.commands.errors.CommandNotFound: Command "playlist" is not found
 [2025-04-01 02:41:40] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session f50872e7954ebf74cbad6ca7892deaf8.
 [2025-04-01 05:54:33] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session f50872e7954ebf74cbad6ca7892deaf8.
 [2025-04-01 09:23:00] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session f50872e7954ebf74cbad6ca7892deaf8.
+[2025-04-01 11:00:27] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "tower" is not found
+[2025-04-01 11:00:36] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "showtower" is not found
+[2025-04-01 11:00:46] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "elp" is not found
+[2025-04-01 11:01:01] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towernewfloor" is not found
+[2025-04-01 11:05:19] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session f50872e7954ebf74cbad6ca7892deaf8.
+[2025-04-01 11:05:38] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towernewfloor" is not found
+[2025-04-01 11:05:43] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "tower" is not found
+[2025-04-01 11:09:52] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 11:12:47] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 11:14:48] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 11:16:10] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:04:29] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:05:09] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:06:08] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:06:35] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:06:37] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:07:19] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:08:00] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerrender" is not found
+[2025-04-01 13:09:32] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "tower" is not found
+[2025-04-01 13:10:45] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerinfo" is not found
+[2025-04-01 13:11:51] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command None
+discord.ext.commands.errors.CommandNotFound: Command "towerstats" is not found
