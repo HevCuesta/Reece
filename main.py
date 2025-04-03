@@ -310,6 +310,11 @@ async def addpoints(ctx, member: discord.Member, amount: float):
     if amount >= 50:
         await ctx.send("Do not give more than 50 points at a time")
         return
+
+    if amount < 0:
+        await ctx.send("Do not send less than 0 points")
+        return
+
     # Allow negative amounts to be added or subtracted from the user's points
     c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?", (member.id, amount, amount))
     conn.commit()
@@ -325,6 +330,10 @@ async def removepoints(ctx, member: discord.Member, amount: float):
     """Removes (or adds) points from a user"""
     if amount >= 50:
         await ctx.send("Do not give more than 50 points at a time")
+        return
+
+    if amount < 0:
+        await ctx.send("Can't remove negative points")
         return
     # Allow negative amounts to be removed (add negative points)
     c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points - ?", (member.id, 0.0, amount))
