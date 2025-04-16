@@ -39,14 +39,14 @@ class TowerVisualization(commands.Cog):
         floors = self.c.fetchall()
         
         # Create the tower image
-        await ctx.send("Rendering the breakcore tower... This may take a moment.")
+        await ctx.send("Rendering the tower... This may take a moment.")
         tower_image = await self.create_breakcore_tower_image(floors, total_floors)
         
         # Send the image to Discord
         file = discord.File(tower_image, filename="breakcore_tower.png")
         embed = discord.Embed(
-            title="⚡ BREAKCORE ETERNAL TOWER ⚡",
-            description=f"A chaotic visualization of the tower's {total_floors} floors.",
+            title="TOWER OF PAIN",
+            description=f"The tower now has {total_floors} floors.",
             color=0xff00ff
         )
         embed.set_image(url="attachment://breakcore_tower.png")

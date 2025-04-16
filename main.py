@@ -14,9 +14,12 @@ import requests
 import asyncio
 from tower import Tower
 from tower_viz import TowerVisualization
+from spotify import setup as setup_spotify
+import os
+from dotenv import load_dotenv
 
 
-
+load_dotenv()
 
 # List of Magic 8-Ball responses
 MAGIC_8BALL_RESPONSES = [
@@ -64,7 +67,7 @@ CUSTOM_RESPONSES = [
 import random
 
 # Bot configuration
-TOKEN = "MTM1NDUzMjYzMzU0NzExNjc4Nw.GOwVUO.7DP5CAsfNwwJrjHKN8VT05q3Dmzp9kQNlL3r6Y"
+TOKEN = os.getenv('DISCORD_KEY')
 PREFIX = "!"
 
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
@@ -95,6 +98,8 @@ async def on_ready():
     print(f"Bot connected as {bot.user}")
     await bot.add_cog(Tower(bot))
     await bot.add_cog(TowerVisualization(bot))
+    await setup_spotify(bot)
+
     print('Tower cogs loaded')
 
 @bot.command(name="8ball", aliases=["magic8", "8b", "magic8ball"])
@@ -156,7 +161,9 @@ async def help(ctx):
         "!toweradd <Floor Name> | <Floor Description> - Add a floor to the tower\n"
         "!towerinfo <Floor number> - Get details about a floor\n"
         "!towerstats - Get tower statistics\n"
-        "!seetower - GET A GLIMPSE AT THE TOWER OF HORROR"
+        "!seetower - GET A GLIMPSE AT THE TOWER OF HORROR\n"
+        "!playlist - Check out the official Magma Sphere Spotify playlist\n"
+        "!addsong <query> - Add a song to the Spotify playlist"
        )
     
     # Split help message into chunks if it exceeds Discord's message length limit
