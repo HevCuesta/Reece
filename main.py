@@ -262,6 +262,9 @@ async def on_message(message):
             "I told my wife she should embrace her mistakes. She gave me a hug."
         ]
         await message.channel.send(random.choice(jokes))
+
+    if "gn reece" in lower_content or "good night reece" in lower_content or "goodnight reece" in lower_content:
+        await message.channel.send("Good night, {}".format(message.author.mention))
     
     if "how are you reece" in lower_content:
         responses = [
