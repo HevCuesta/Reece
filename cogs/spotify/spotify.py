@@ -1,12 +1,16 @@
 # spotify.py
 import discord
 from discord.ext import commands
-from spotify_auth import get_spotify_client
+from cogs.spotify.spotify_auth import get_spotify_client
 import re
 import asyncio
 import traceback
+import os
+from dotenv import load_dotenv
 
-PLAYLIST_ID = "1R2zNS22jWAEsfeJWUiqyk"
+load_dotenv()
+
+PLAYLIST_ID = os.getenv('SPOTIFY_PLAYLIST')
 
 class SpotifyCog(commands.Cog):
     def __init__(self, bot):

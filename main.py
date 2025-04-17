@@ -12,9 +12,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import requests
 import asyncio
-from tower import Tower
-from tower_viz import TowerVisualization
-from spotify import setup as setup_spotify
+from cogs.tower.tower import Tower
+from cogs.tower.tower_viz import TowerVisualization
+from cogs.spotify.spotify import setup as setup_spotify
 import os
 from dotenv import load_dotenv
 
