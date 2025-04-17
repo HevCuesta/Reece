@@ -1,7 +1,7 @@
 # spotify.py
 import discord
 from discord.ext import commands
-from spotify_auth import get_spotify_client
+from cogs.spotify.spotify_auth import get_spotify_client
 import re
 import asyncio
 import traceback
