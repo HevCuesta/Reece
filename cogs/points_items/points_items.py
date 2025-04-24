@@ -2,25 +2,42 @@ import discord
 from discord.ext import commands
 import matplotlib.pyplot as plt
 import io
+import sqlite3
 
+# Connect to SQLite database
+conn = sqlite3.connect("points.db")
+c = conn.cursor()
+c.execute("""
+CREATE TABLE IF NOT EXISTS points (
+    user_id INTEGER PRIMARY KEY,
+    points REAL DEFAULT 0.0
+)
+""")
+c.execute("""
+CREATE TABLE IF NOT EXISTS inventory (
+    user_id INTEGER,
+    item TEXT,
+    quantity INTEGER DEFAULT 1,
+    PRIMARY KEY (user_id, item)
+)
+""")
+conn.commit()
 
 class PointsItemsCog(commands.Cog):
-        def __init__(self, bot, conn, cursor):
+        def __init__(self, bot):
             self.bot = bot
-            self.conn = conn
-            self.c = cursor
             print("Points and Items cog loaded")
 
         @commands.command()
         async def points(self, ctx, member: discord.Member = None):
             """Displays a user's points and items"""
             user_id = member.id if member else ctx.author.id
-            self.c.execute("SELECT points FROM points WHERE user_id = ?", (user_id,))
-            result = self.c.fetchone()
+            c.execute("SELECT points FROM points WHERE user_id = ?", (user_id,))
+            result = c.fetchone()
             points = result[0] if result else 0.0
 
-            self.c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
-            items = self.c.fetchall()
+            c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
+            items = c.fetchall()
             items_text = ", ".join([f"{item} x{quantity}" for item, quantity in items]) if items else "No items"
             
             await ctx.send(f"{member.mention if member else ctx.author.mention} has {points} points and items: {items_text}.")
@@ -41,9 +58,9 @@ class PointsItemsCog(commands.Cog):
                 await ctx.send("Do not send less than 0 points")
                 return
 
-            self.c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?", 
+            c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?", 
                          (member.id, amount, amount))
-            self.conn.commit()
+            conn.commit()
             await ctx.send(f"{ctx.author.mention} gave {amount} points to {member.mention}.")
 
         @addpoints.error
@@ -62,9 +79,9 @@ class PointsItemsCog(commands.Cog):
                 await ctx.send("Can't remove negative points")
                 return
                 
-            self.c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points - ?", 
+            c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points - ?", 
                          (member.id, 0.0, amount))
-            self.conn.commit()
+            conn.commit()
             await ctx.send(f"{ctx.author.mention} removed {amount} points from {member.mention}.")
 
         @removepoints.error
@@ -75,19 +92,19 @@ class PointsItemsCog(commands.Cog):
         @commands.command()
         async def giveitem(self, ctx, member: discord.Member, quantity: int, *, item: str):
             """Gives an item to a user - !giveitem @user <quantity> <item name>"""
-            self.c.execute("INSERT INTO inventory (user_id, item, quantity) VALUES (?, ?, ?) ON CONFLICT(user_id, item) DO UPDATE SET quantity = quantity + ?", 
+            c.execute("INSERT INTO inventory (user_id, item, quantity) VALUES (?, ?, ?) ON CONFLICT(user_id, item) DO UPDATE SET quantity = quantity + ?", 
                          (member.id, item, quantity, quantity))
-            self.conn.commit()
+            conn.commit()
             await ctx.send(f"{ctx.author.mention} gave {member.mention} {quantity} {item}.")
 
         @commands.command()
         async def removeitem(self, ctx, member: discord.Member, quantity: int, *, item: str):
             """Removes an item from a user - !removeitem @user <quantity> <item name>"""
-            self.c.execute("UPDATE inventory SET quantity = MAX(0, quantity - ?) WHERE user_id = ? AND item = ?", 
+            c.execute("UPDATE inventory SET quantity = MAX(0, quantity - ?) WHERE user_id = ? AND item = ?", 
                          (quantity, member.id, item))
-            self.c.execute("DELETE FROM inventory WHERE user_id = ? AND item = ? AND quantity = 0", 
+            c.execute("DELETE FROM inventory WHERE user_id = ? AND item = ? AND quantity = 0", 
                          (member.id, item))
-            self.conn.commit()
+            conn.commit()
             await ctx.send(f"{ctx.author.mention} removed {quantity} {item} from {member.mention}.")
 
         @giveitem.error
@@ -98,8 +115,8 @@ class PointsItemsCog(commands.Cog):
         @commands.command()
         async def ranking(self, ctx):
             """Displays the top 10 users with the most points and sends a styled table"""
-            self.c.execute("SELECT user_id, points FROM points ORDER BY points DESC LIMIT 10")
-            ranking = self.c.fetchall()
+            c.execute("SELECT user_id, points FROM points ORDER BY points DESC LIMIT 10")
+            ranking = c.fetchall()
             if not ranking:
                 await ctx.send("No points data available.")
                 return
@@ -118,8 +135,8 @@ class PointsItemsCog(commands.Cog):
                     member_name = member.display_name
                 
                 # Get the user's items
-                self.c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
-                items = self.c.fetchall()
+                c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
+                items = c.fetchall()
                 items_text = ", ".join([f"{item} x{quantity}" for item, quantity in items]) if items else "No items"
                 table_data.append([member_name, points, items_text])
 

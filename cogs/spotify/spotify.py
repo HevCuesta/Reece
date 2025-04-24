@@ -18,6 +18,7 @@ class SpotifyCog(commands.Cog):
         self.sp = None
         # Initialize Spotify in the background to avoid blocking
         self.bot.loop.create_task(self.initialize_spotify())
+        print("Spotify cog loaded")
         
     async def initialize_spotify(self):
         """Initialize Spotify client in the background"""

@@ -1,18 +1,15 @@
 import discord
 from discord.ext import commands
-import sqlite3
 import fortune as fortune_module
-from datetime import datetime
-import time
-import pytz
 from cogs.tower.tower import Tower
 from cogs.tower.tower_viz import TowerVisualization
 from cogs.spotify.spotify import setup as setup_spotify
 from cogs.eight_ball.eight_ball import EightBall
 from cogs.points_items.points_items import PointsItemsCog
+from cogs.autoresponses.autoresponses import AutoResponses
 import os
 from dotenv import load_dotenv
-import random
+
 
 
 load_dotenv()
@@ -24,24 +21,6 @@ PREFIX = "!"
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
 
 
-# Connect to SQLite database
-conn = sqlite3.connect("points.db")
-c = conn.cursor()
-c.execute("""
-CREATE TABLE IF NOT EXISTS points (
-    user_id INTEGER PRIMARY KEY,
-    points REAL DEFAULT 0.0
-)
-""")
-c.execute("""
-CREATE TABLE IF NOT EXISTS inventory (
-    user_id INTEGER,
-    item TEXT,
-    quantity INTEGER DEFAULT 1,
-    PRIMARY KEY (user_id, item)
-)
-""")
-conn.commit()
 
 @bot.event
 async def on_ready():
@@ -49,7 +28,8 @@ async def on_ready():
     await bot.add_cog(Tower(bot))
     await bot.add_cog(TowerVisualization(bot))
     await bot.add_cog(EightBall(bot))
-    await bot.add_cog(PointsItemsCog(bot, conn, c))
+    await bot.add_cog(PointsItemsCog(bot))
+    await bot.add_cog(AutoResponses(bot))
     await setup_spotify(bot)
 
     print('Tower cogs loaded')
@@ -88,100 +68,6 @@ async def help(ctx):
     
     # Send any remaining part of the help text
     await ctx.send(help_text)
-
-
-# Load greetings from file
-def load_greetings():
-    try:
-        with open("data/greetings.txt", "r", encoding="utf-8") as file:
-            return [line.strip() for line in file if line.strip()]
-    except FileNotFoundError:
-        print("Warning: data/greetings.txt not found. Using default greetings.")
-        # Default greetings as fallback
-        return [
-            "hey there, {}!",
-            "hello, {}!",
-            "hi, {} how's it going",
-            "yo, {}"
-        ]
-        
-def load_facts():
-    try:
-        with open("data/funfacts.txt", "r", encoding="utf-8") as file:
-            return [line.strip() for line in file if line.strip()]
-    except FileNotFoundError:
-        print("Warning: data/funfacts.txt not found. Using default facts.")
-        # Default facts as fallback
-        return [
-            "Did you know? Honey never spoils.",
-            "Bananas are berries, but strawberries aren't.",
-            "A group of flamingos is called a 'flamboyance'.",
-            "Octopuses have three hearts."
-        ]
-        
-
-# Load greetings when bot starts
-greetings = load_greetings()
-facts = load_facts()
-
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return  # Evita que el bot se responda a sí mismo
-        
-    cst = pytz.timezone('US/Central')
-    current_time = datetime.now(cst)
-    lower_content = message.content.lower()
-    
-    morning_responses = [
-        "good morning, {}! Hope you have a great day!",
-        "Rise and shine, {}!",
-        "Morning, {}! Have you had your coffee yet?",
-        "Top of the morning to you, {}!"
-    ]
-    
-    if 6 <= current_time.hour < 12:
-        if any(phrase in lower_content for phrase in ["hi reece", "hello reece", "gm reece", "good morning reece"]):
-            response = random.choice(morning_responses).format(message.author.mention)
-            await message.channel.send(response)
-        
-    else:
-        if any(phrase in lower_content for phrase in ["hi reece", "hello reece"]):
-            response = random.choice(greetings).format(message.author.mention)
-            await message.channel.send(response)
-    
-    if "do a backflip reece" in lower_content or "reece do a backflip" in lower_content:
-        await message.channel.send("🤸")
-        time.sleep(0.5)
-        await message.channel.send("Ta-da!")
-    
-    if "fuck you reece" in lower_content:
-        await message.channel.send("One should always aim high. Set your aspirations beyond your reach and you will always have something to strive for.")
-    
-    # Nuevas interacciones divertidas
-    if "tell me a joke reece" in lower_content:
-        jokes = [
-            "Why don't programmers like nature? It has too many bugs!",
-            "What do you call 8 hobbits? A hob-byte!",
-            "Why did the computer catch a cold? It left its Windows open!",
-            "I told my wife she should embrace her mistakes. She gave me a hug."
-        ]
-        await message.channel.send(random.choice(jokes))
-
-    if "gn reece" in lower_content or "good night reece" in lower_content or "goodnight reece" in lower_content:
-        await message.channel.send("Good night, {}".format(message.author.mention))
-    
-    if "what's your favorite color reece" in lower_content or "reece what is your favorite color" in lower_content or "what is your favorite color reece" in lower_content:
-        await message.channel.send("I like #00FF00, it's a very refreshing shade of green!")
-    
-    if "who made you reece" in lower_content:
-        await message.channel.send("I was created by some wonderful humans with way too much time on their hands!")
-    
-    if "reece tell me a fun fact" in lower_content or "tell me a fun fact reece" in lower_content:
-        await message.channel.send(random.choice(facts))
-    
-    await bot.process_commands(message)  # Permite que los comandos sigan funcionando
-
 
 
 if __name__ == "__main__":
