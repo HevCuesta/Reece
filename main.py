@@ -10,8 +10,6 @@ from cogs.autoresponses.autoresponses import AutoResponses
 import os
 from dotenv import load_dotenv
 
-
-
 load_dotenv()
 
 # Bot configuration
@@ -21,7 +19,7 @@ PREFIX = "!"
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
 
 
-
+# Loads cogs components
 @bot.event
 async def on_ready():
     print(f"Bot connected as {bot.user}")
@@ -31,8 +29,6 @@ async def on_ready():
     await bot.add_cog(PointsItemsCog(bot))
     await bot.add_cog(AutoResponses(bot))
     await setup_spotify(bot)
-
-    print('Tower cogs loaded')
 
 @bot.command()
 async def fortune(ctx):
@@ -69,8 +65,5 @@ async def help(ctx):
     # Send any remaining part of the help text
     await ctx.send(help_text)
 
-
 if __name__ == "__main__":
-    
     bot.run(TOKEN)
-    
