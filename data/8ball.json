@@ -1,0 +1,39 @@
+{
+    "standard_responses": [
+      { "text": "It is certain.", "type": "positive", "color": 3066993 },
+      { "text": "It is decidedly so.", "type": "positive", "color": 3066993 },
+      { "text": "Without a doubt.", "type": "positive", "color": 3066993 },
+      { "text": "Yes – definitely.", "type": "positive", "color": 3066993 },
+      { "text": "You may rely on it.", "type": "positive", "color": 3066993 },
+      { "text": "As I see it, yes.", "type": "positive", "color": 3066993 },
+      { "text": "Most likely.", "type": "positive", "color": 3066993 },
+      { "text": "Outlook good.", "type": "positive", "color": 3066993 },
+      { "text": "Yes.", "type": "positive", "color": 3066993 },
+      { "text": "Signs point to yes.", "type": "positive", "color": 3066993 },
+  
+      { "text": "Reply hazy, try again.", "type": "neutral", "color": 15105570 },
+      { "text": "Ask again later.", "type": "neutral", "color": 15105570 },
+      { "text": "Better not tell you now.", "type": "neutral", "color": 15105570 },
+      { "text": "Cannot predict now.", "type": "neutral", "color": 15105570 },
+      { "text": "Concentrate and ask again.", "type": "neutral", "color": 15105570 },
+  
+      { "text": "Don't count on it.", "type": "negative", "color": 15158332 },
+      { "text": "My reply is no.", "type": "negative", "color": 15158332 },
+      { "text": "My sources say no.", "type": "negative", "color": 15158332 },
+      { "text": "Outlook not so good.", "type": "negative", "color": 15158332 },
+      { "text": "Very doubtful.", "type": "negative", "color": 15158332 }
+    ],
+    "custom_responses": [
+      { "text": "The stars align in your favor... but Mercury is in retrograde, so...", "type": "neutral", "color": 10181046 },
+      { "text": "Ask me again when I've had my coffee.", "type": "neutral", "color": 10181046 },
+      { "text": "Absolutely! ...wait, what was the question again?", "type": "positive", "color": 10181046 },
+      { "text": "The answer lies within you. Or maybe Google.", "type": "neutral", "color": 10181046 },
+      { "text": "42. That's always the answer.", "type": "positive", "color": 10181046 },
+      { "text": "My crystal ball is in the shop. Try tomorrow.", "type": "neutral", "color": 10181046 },
+      { "text": "The spirits are whispering... but I don't speak ghost.", "type": "neutral", "color": 10181046 },
+      { "text": "All signs point to maybe. Or possibly not. One of those.", "type": "neutral", "color": 10181046 },
+      { "text": "I'm legally obligated to say no to that question.", "type": "negative", "color": 10181046 },
+      { "text": "Let me think... ERROR: ILLEGAL OPERATION: THINKING", "type": "negative", "color": 10181046 }
+    ]
+  }
+  

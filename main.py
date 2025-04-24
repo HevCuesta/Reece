@@ -17,6 +17,7 @@ from cogs.tower.tower_viz import TowerVisualization
 from cogs.spotify.spotify import setup as setup_spotify
 import os
 from dotenv import load_dotenv
+import random
 
 
 load_dotenv()
@@ -64,7 +65,7 @@ CUSTOM_RESPONSES = [
     {"text": "Let me think... ERROR: ILLEGAL OPERATION: THINKING", "type": "negative", "color": 0x9b59b6},
 ]
 
-import random
+
 
 # Bot configuration
 TOKEN = os.getenv('DISCORD_KEY')
@@ -176,48 +177,40 @@ async def help(ctx):
     await ctx.send(help_text)
 
 
-greetings = [
-    "hey there, {}!", 
-    "hello, {}!", 
-    "hi, {} how's it going", 
-    "yo, {}", 
-    "sup, {}?", 
-    "greetings, {}", 
-    "hola, {}", 
-    "hey hey, {}",
-    "how now, brown cow?",
-    "how do you do, {}?",
-    "salutations, {}",
-    "how have you been, {}?",
-    "to whom it may concern",
-    "it's great to see you, {}",
-    "nice to see you, {}",
-    "Hello Sue, how are you?",
-    "Long time no see, {}",
-    "Well hello {}",
-    "Oh My God….I did NOT expect to see you here, {}!",
-    "A nod (with nothing actually spoken)",
-    "how's the weather over there, {}?",
-    "what's the story, {}?",
-    "what's the word on the street, {}?",
-    "why are you like this?",
-    "please don't talk to me right now.",
-    "aloha, {}! (this one means hello AND goodbye)",
-    "salam alaykum, {}",
-    "こんにちは、{}ーさん！",
-    "Ciao",
-    "glück auf, {}",
-    "Blessings be upon your family, {}.",
-    "Have you accepted Jesus Christ as your lord and savior, {}?",
-    "Interfaith greetings in Indonesia",
-    "Shalom, {}",
-    "Happy Holidays, {}",
-    "Wazzapppp!!!",
-    "want to watch me do a backflip, {}?",
-    "hey hey, {}, it's my birthday today!",
-    "what's happening, {}?",
-    "hey {}, want to join my secret telegram channel?"
-]
+# Load greetings from file
+def load_greetings():
+    try:
+        with open("data/greetings.txt", "r", encoding="utf-8") as file:
+            return [line.strip() for line in file if line.strip()]
+    except FileNotFoundError:
+        print("Warning: data/greetings.txt not found. Using default greetings.")
+        # Default greetings as fallback
+        return [
+            "hey there, {}!",
+            "hello, {}!",
+            "hi, {} how's it going",
+            "yo, {}"
+        ]
+        
+def load_facts():
+    try:
+        with open("data/funfacts.txt", "r", encoding="utf-8") as file:
+            return [line.strip() for line in file if line.strip()]
+    except FileNotFoundError:
+        print("Warning: data/funfacts.txt not found. Using default facts.")
+        # Default facts as fallback
+        return [
+            "Did you know? Honey never spoils.",
+            "Bananas are berries, but strawberries aren't.",
+            "A group of flamingos is called a 'flamboyance'.",
+            "Octopuses have three hearts."
+        ]
+        
+
+
+# Load greetings when bot starts
+greetings = load_greetings()
+facts = load_facts()
 
 @bot.event
 async def on_message(message):
@@ -266,14 +259,6 @@ async def on_message(message):
     if "gn reece" in lower_content or "good night reece" in lower_content or "goodnight reece" in lower_content:
         await message.channel.send("Good night, {}".format(message.author.mention))
     
-    if "how are you reece" in lower_content:
-        responses = [
-            "I'm just a bot, but I'm feeling electric! ⚡",
-            "Doing great! Thanks for asking, {}!".format(message.author.mention),
-            "I am 01001000 01100001 01110000 01110000 01111001! (That means happy in binary)"
-        ]
-        await message.channel.send(random.choice(responses))
-    
     if "what's your favorite color reece" in lower_content or "reece what is your favorite color" in lower_content or "what is your favorite color reece" in lower_content:
         await message.channel.send("I like #00FF00, it's a very refreshing shade of green!")
     
@@ -281,12 +266,6 @@ async def on_message(message):
         await message.channel.send("I was created by some wonderful humans with way too much time on their hands!")
     
     if "reece tell me a fun fact" in lower_content or "tell me a fun fact reece" in lower_content:
-        facts = [
-            "Did you know that honey never spoils? Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3000 years old and still perfectly edible!",
-            "Bananas are berries, but strawberries aren't!",
-            "Octopuses have three hearts and their blood is blue!",
-            "A group of flamingos is called a 'flamboyance'!"
-        ]
         await message.channel.send(random.choice(facts))
     
     await bot.process_commands(message)  # Permite que los comandos sigan funcionando
