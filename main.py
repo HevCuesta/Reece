@@ -1,22 +1,18 @@
 import discord
 from discord.ext import commands
 import sqlite3
-import matplotlib.pyplot as plt
 import fortune as fortune_module
 from datetime import datetime
 import time
 import pytz
-import io
-import asyncio
 from cogs.tower.tower import Tower
 from cogs.tower.tower_viz import TowerVisualization
 from cogs.spotify.spotify import setup as setup_spotify
 from cogs.eight_ball.eight_ball import EightBall
-from cogs.points_items.points import PointsItemsCog
+from cogs.points_items.points_items import PointsItemsCog
 import os
 from dotenv import load_dotenv
 import random
-import json
 
 
 load_dotenv()
@@ -93,19 +89,6 @@ async def help(ctx):
     # Send any remaining part of the help text
     await ctx.send(help_text)
 
-# Load responses from data/8ball.json
-def load_8ball_responses():
-    try:
-        with open("data/8ball.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
-            return data.get("standard_responses", []), data.get("custom_responses", [])
-    except FileNotFoundError:
-        print("Warning: data/8ball.json not found. Using default responses.")
-        # Default responses if file not found
-        return [], []
-    except json.JSONDecodeError:
-        print("Error: Could not parse data/8ball.json. Using default responses.")
-        return [], []
 
 # Load greetings from file
 def load_greetings():
@@ -140,7 +123,6 @@ def load_facts():
 # Load greetings when bot starts
 greetings = load_greetings()
 facts = load_facts()
-MAGIC_8BALL_RESPONSES, CUSTOM_RESPONSES = load_8ball_responses()
 
 @bot.event
 async def on_message(message):
