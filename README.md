@@ -20,5 +20,3 @@ And set the following variables inside your ```.env``` file:
 
 ### Additional notes
 This was never initially intended to be open-source, hence the messy code. Any improvements to code structure, and additional features are heavily appreciated.
-
-P.S. Yes, the databases are meant to be in the repo, no, they are not up-to-date.
