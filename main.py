@@ -7,72 +7,25 @@ from datetime import datetime
 import time
 import pytz
 import io
-from random import choice, randint
-from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
-import requests
 import asyncio
 from cogs.tower.tower import Tower
 from cogs.tower.tower_viz import TowerVisualization
 from cogs.spotify.spotify import setup as setup_spotify
+from cogs.eight_ball.eight_ball import EightBall
+from cogs.points_items.points import PointsItemsCog
 import os
 from dotenv import load_dotenv
 import random
+import json
 
 
 load_dotenv()
-
-# List of Magic 8-Ball responses
-MAGIC_8BALL_RESPONSES = [
-    # Positive answers
-    {"text": "It is certain.", "type": "positive", "color": 0x2ecc71},
-    {"text": "It is decidedly so.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Without a doubt.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Yes – definitely.", "type": "positive", "color": 0x2ecc71},
-    {"text": "You may rely on it.", "type": "positive", "color": 0x2ecc71},
-    {"text": "As I see it, yes.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Most likely.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Outlook good.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Yes.", "type": "positive", "color": 0x2ecc71},
-    {"text": "Signs point to yes.", "type": "positive", "color": 0x2ecc71},
-    
-    # Neutral answers
-    {"text": "Reply hazy, try again.", "type": "neutral", "color": 0xe67e22},
-    {"text": "Ask again later.", "type": "neutral", "color": 0xe67e22},
-    {"text": "Better not tell you now.", "type": "neutral", "color": 0xe67e22},
-    {"text": "Cannot predict now.", "type": "neutral", "color": 0xe67e22},
-    {"text": "Concentrate and ask again.", "type": "neutral", "color": 0xe67e22},
-    
-    # Negative answers
-    {"text": "Don't count on it.", "type": "negative", "color": 0xe74c3c},
-    {"text": "My reply is no.", "type": "negative", "color": 0xe74c3c},
-    {"text": "My sources say no.", "type": "negative", "color": 0xe74c3c},
-    {"text": "Outlook not so good.", "type": "negative", "color": 0xe74c3c},
-    {"text": "Very doubtful.", "type": "negative", "color": 0xe74c3c},
-]
-
-# Custom responses that can randomly appear (rare)
-CUSTOM_RESPONSES = [
-    {"text": "The stars align in your favor... but Mercury is in retrograde, so...", "type": "neutral", "color": 0x9b59b6},
-    {"text": "Ask me again when I've had my coffee.", "type": "neutral", "color": 0x9b59b6},
-    {"text": "Absolutely! ...wait, what was the question again?", "type": "positive", "color": 0x9b59b6},
-    {"text": "The answer lies within you. Or maybe Google.", "type": "neutral", "color": 0x9b59b6},
-    {"text": "42. That's always the answer.", "type": "positive", "color": 0x9b59b6},
-    {"text": "My crystal ball is in the shop. Try tomorrow.", "type": "neutral", "color": 0x9b59b6},
-    {"text": "The spirits are whispering... but I don't speak ghost.", "type": "neutral", "color": 0x9b59b6},
-    {"text": "All signs point to maybe. Or possibly not. One of those.", "type": "neutral", "color": 0x9b59b6},
-    {"text": "I'm legally obligated to say no to that question.", "type": "negative", "color": 0x9b59b6},
-    {"text": "Let me think... ERROR: ILLEGAL OPERATION: THINKING", "type": "negative", "color": 0x9b59b6},
-]
-
-
 
 # Bot configuration
 TOKEN = os.getenv('DISCORD_KEY')
 PREFIX = "!"
 
 bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all(), help_command=None)
-
 
 
 # Connect to SQLite database
@@ -99,47 +52,11 @@ async def on_ready():
     print(f"Bot connected as {bot.user}")
     await bot.add_cog(Tower(bot))
     await bot.add_cog(TowerVisualization(bot))
+    await bot.add_cog(EightBall(bot))
+    await bot.add_cog(PointsItemsCog(bot, conn, c))
     await setup_spotify(bot)
 
     print('Tower cogs loaded')
-
-@bot.command(name="8ball", aliases=["magic8", "8b", "magic8ball"])
-async def magic_8ball(ctx, *, question=None):
-    """Ask the Magic 8-Ball a question!"""
-    if not question:
-        await ctx.send(f"{ctx.author.mention}, you need to ask a question")
-        return
-        
-    # Small chance of getting a custom response
-    if random.random() < 0.1:  # 10% chance for custom response
-        response = random.choice(CUSTOM_RESPONSES)
-    else:
-        response = random.choice(MAGIC_8BALL_RESPONSES)
-    
-    # Create an embed for the response
-    embed = discord.Embed(
-        description=f"**Question:** {question}",
-        color=response["color"]
-    )
-    
-    # Add a thinking delay for effect
-    async with ctx.typing():
-        await asyncio.sleep(1.5)  # Simulates "thinking"
-    
-    embed.add_field(name="The 8-Ball says:", value=response["text"], inline=False)
-    
-    # Add a small flavor text based on response type
-    if response["type"] == "positive":
-        embed.set_footer(text="!!!!!!!")
-    elif response["type"] == "negative":
-        embed.set_footer(text="idk man dont blame me...")
-    else:
-        embed.set_footer(text="youch...")
-    
-    await ctx.send(embed=embed)
-
-
-
 
 @bot.command()
 async def fortune(ctx):
@@ -176,6 +93,19 @@ async def help(ctx):
     # Send any remaining part of the help text
     await ctx.send(help_text)
 
+# Load responses from data/8ball.json
+def load_8ball_responses():
+    try:
+        with open("data/8ball.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            return data.get("standard_responses", []), data.get("custom_responses", [])
+    except FileNotFoundError:
+        print("Warning: data/8ball.json not found. Using default responses.")
+        # Default responses if file not found
+        return [], []
+    except json.JSONDecodeError:
+        print("Error: Could not parse data/8ball.json. Using default responses.")
+        return [], []
 
 # Load greetings from file
 def load_greetings():
@@ -207,10 +137,10 @@ def load_facts():
         ]
         
 
-
 # Load greetings when bot starts
 greetings = load_greetings()
 facts = load_facts()
+MAGIC_8BALL_RESPONSES, CUSTOM_RESPONSES = load_8ball_responses()
 
 @bot.event
 async def on_message(message):
@@ -269,165 +199,6 @@ async def on_message(message):
         await message.channel.send(random.choice(facts))
     
     await bot.process_commands(message)  # Permite que los comandos sigan funcionando
-
-
-
-@bot.command()
-async def points(ctx, member: discord.Member = None):
-    """Displays a user's points and items"""
-    user_id = member.id if member else ctx.author.id
-    c.execute("SELECT points FROM points WHERE user_id = ?", (user_id,))
-    result = c.fetchone()
-    points = result[0] if result else 0.0
-
-    c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
-    items = c.fetchall()
-    items_text = ", ".join([f"{item} x{quantity}" for item, quantity in items]) if items else "No items"
-    
-    await ctx.send(f"{member.mention if member else ctx.author.mention} has {points} points and items: {items_text}.")
-
-@points.error
-async def points_error(ctx, error):
-    if isinstance(error, commands.MemberNotFound):
-        await ctx.send("Member not found. Please mention a valid user.")
-
-
-
-@bot.command()
-async def addpoints(ctx, member: discord.Member, amount: float):
-    """Adds (or removes) points from a user"""
-    if amount >= 50:
-        await ctx.send("Do not give more than 50 points at a time")
-        return
-
-    if amount < 0:
-        await ctx.send("Do not send less than 0 points")
-        return
-
-    # Allow negative amounts to be added or subtracted from the user's points
-    c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?", (member.id, amount, amount))
-    conn.commit()
-    await ctx.send(f"{ctx.author.mention} gave {amount} points to {member.mention}.")
-
-@addpoints.error
-async def addpoints_error(ctx, error):
-    if isinstance(error, commands.MemberNotFound):
-        await ctx.send("Member not found. Please mention a valid user.")
-
-@bot.command()
-async def removepoints(ctx, member: discord.Member, amount: float):
-    """Removes (or adds) points from a user"""
-    if amount >= 50:
-        await ctx.send("Do not give more than 50 points at a time")
-        return
-
-    if amount < 0:
-        await ctx.send("Can't remove negative points")
-        return
-    # Allow negative amounts to be removed (add negative points)
-    c.execute("INSERT INTO points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points - ?", (member.id, 0.0, amount))
-    conn.commit()
-    await ctx.send(f"{ctx.author.mention} removed {amount} points from {member.mention}.")
-
-
-@removepoints.error
-async def removepoints_error(ctx, error):
-    if isinstance(error, commands.MemberNotFound):
-        await ctx.send("Member not found. Please mention a valid user.")
-
-
-@bot.command()
-async def giveitem(ctx, member: discord.Member, quantity: int, *, item: str):
-    """Gives an item to a user - !giveitem @user <quantity> <item name>"""
-    c.execute("INSERT INTO inventory (user_id, item, quantity) VALUES (?, ?, ?) ON CONFLICT(user_id, item) DO UPDATE SET quantity = quantity + ?", (member.id, item, quantity, quantity))
-    conn.commit()
-    await ctx.send(f"{ctx.author.mention} gave {member.mention} {quantity} {item}.")
-
-@bot.command()
-async def removeitem(ctx, member: discord.Member, quantity: int, *, item: str):
-    """Removes an item from a user - !removeitem @user <quantity> <item name>"""
-    c.execute("UPDATE inventory SET quantity = MAX(0, quantity - ?) WHERE user_id = ? AND item = ?", (quantity, member.id, item))
-    c.execute("DELETE FROM inventory WHERE user_id = ? AND item = ? AND quantity = 0", (member.id, item))
-    conn.commit()
-    await ctx.send(f"{ctx.author.mention} removed {quantity} {item} from {member.mention}.")
-
-@giveitem.error
-async def giveitem_error(ctx, error):
-    if isinstance(error, commands.MemberNotFound):
-        await ctx.send("Member not found. Please mention a valid user.")
-
-@bot.command()
-async def ranking(ctx):
-    """Displays the top 10 users with the most points and sends a styled table"""
-    c.execute("SELECT user_id, points FROM points ORDER BY points DESC LIMIT 10")
-    ranking = c.fetchall()
-    if not ranking:
-        await ctx.send("No points data available.")
-        return
-    
-    # Prepare data for the table
-    table_data = []
-    for user_id, points in ranking:
-        try:
-            member = await ctx.guild.fetch_member(user_id)
-            if not member:  # If the member is not in the guild
-                raise Exception("Member not found")
-        except Exception:
-            member = None  # If member not found, set it to None
-            member_name = "Unknown Member"
-        else:
-            member_name = member.display_name
-        
-        # Get the user's items
-        c.execute("SELECT item, quantity FROM inventory WHERE user_id = ?", (user_id,))
-        items = c.fetchall()
-        items_text = ", ".join([f"{item} x{quantity}" for item, quantity in items]) if items else "No items"
-        table_data.append([member_name, points, items_text])
-
-    # Create the figure and axis
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Hide axes
-    ax.axis("off")
-
-    # Create the table with headers
-    table = ax.table(cellText=table_data, colLabels=["User", "Points", "Items"], loc="center", cellLoc='center')
-
-    # Styling the table
-    table.auto_set_font_size(False)
-    table.set_fontsize(12)
-    table.scale(1.2, 1.2)  # Scale the table for better readability
-
-    # Set the header style
-    for (i, j), cell in table.get_celld().items():
-        if i == 0:
-            cell.set_fontsize(14)
-            cell.set_text_props(weight='bold')
-            cell.set_facecolor('#4CAF50')  # Header background color
-            cell.set_edgecolor('black')
-        else:
-            cell.set_edgecolor('gray')  # Set the border color of each cell
-            cell.set_facecolor('#f2f2f2')  # Cell background color
-
-    # Set alternating row colors
-    for i, row in enumerate(table.get_celld().values()):
-        if i % 2 == 1:  # Change background color for alternating rows
-            row.set_facecolor('#e6e6e6')
-
-    # Add a title to the table
-    plt.title("Top 10 Users by Points", fontsize=16, fontweight='bold')
-
-    # Save the table to a buffer
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format="png", bbox_inches="tight")
-    buffer.seek(0)
-    plt.close()
-
-    # Send the styled table as an image
-    file = discord.File(buffer, filename="ranking.png")
-    await ctx.send("Here is the leaderboard table:", file=file)
-
-
 
 
 
