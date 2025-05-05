@@ -7,6 +7,7 @@ from cogs.spotify.spotify import setup as setup_spotify
 from cogs.eight_ball.eight_ball import EightBall
 from cogs.points_items.points_items import PointsItemsCog
 from cogs.autoresponses.autoresponses import AutoResponses
+from cogs.anon.anonymous_control import AnonymousControl
 import os
 from dotenv import load_dotenv
 
@@ -28,6 +29,7 @@ async def on_ready():
     await bot.add_cog(EightBall(bot))
     await bot.add_cog(PointsItemsCog(bot))
     await bot.add_cog(AutoResponses(bot))
+    await bot.add_cog(AnonymousControl(bot))
     await setup_spotify(bot)
 
 @bot.command()
