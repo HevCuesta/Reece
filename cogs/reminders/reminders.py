@@ -89,7 +89,7 @@ class Reminders(commands.Cog):
         
         # Create embed
         embed = discord.Embed(
-            title="⏰ Reminder Set!",
+            title="Reminder Set",
             description=f"I'll remind you about: **{message}**",
             color=discord.Color.green()
         )
@@ -149,14 +149,14 @@ class Reminders(commands.Cog):
         
         if cursor.fetchone() is None:
             conn.close()
-            await ctx.send(f"{ctx.author.mention}, reminder not found or doesn't belong to you!")
+            await ctx.send(f"{ctx.author.mention}, reminder not found or doesn't belong to you")
             return
         
         cursor.execute("DELETE FROM reminders WHERE id = ?", (reminder_id,))
         conn.commit()
         conn.close()
         
-        await ctx.send(f"✅ {ctx.author.mention}, reminder #{reminder_id} has been cancelled!")
+        await ctx.send(f"{ctx.author.mention}, reminder #{reminder_id} has been cancelled!")
     
     @tasks.loop(seconds=30)
     async def check_reminders(self):
