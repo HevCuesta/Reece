@@ -7,6 +7,7 @@ from cogs.spotify.spotify import setup as setup_spotify
 from cogs.eight_ball.eight_ball import EightBall
 from cogs.points_items.points_items import PointsItemsCog
 from cogs.autoresponses.autoresponses import AutoResponses
+from cogs.reminders.reminders import Reminders
 import os
 from dotenv import load_dotenv
 
@@ -28,6 +29,7 @@ async def on_ready():
     await bot.add_cog(EightBall(bot))
     await bot.add_cog(PointsItemsCog(bot))
     await bot.add_cog(AutoResponses(bot))
+    await bot.add_cog(Reminders(bot))
     await setup_spotify(bot)
 
 @bot.command()
@@ -53,7 +55,10 @@ async def help(ctx):
         "!towerstats - Get tower statistics\n"
         "!seetower - GET A GLIMPSE AT THE TOWER OF HORROR\n"
         "!playlist - Check out the official Magma Sphere Spotify playlist\n"
-        "!addsong <query> - Add a song to the Spotify playlist"
+        "!addsong <query> - Add a song to the Spotify playlist\n"
+        "!remindme <time> <message> - Set a reminder (e.g., !remindme 1h30m Check the oven)\n"
+        "!reminders - List all your active reminders\n"
+        "!cancelreminder <id> - Cancel a reminder by its ID"
        )
     
     # Split help message into chunks if it exceeds Discord's message length limit
